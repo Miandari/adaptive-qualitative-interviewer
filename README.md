@@ -324,11 +324,51 @@ CMD ["chainlit", "run", "interfaces/chainlit_app.py", "--host", "0.0.0.0"]
 # CMD ["uvicorn", "interfaces.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-### Cloud Deployment
+### Streamlit Community Cloud (Recommended)
 
-- **Chainlit**: Deploy to Chainlit Cloud or any platform supporting Python web apps
-- **FastAPI**: Deploy to AWS, GCP, Azure, or platforms like Railway, Render
-- **Both**: Use docker-compose to run both interfaces
+**Free, easy deployment directly from GitHub:**
+
+1. **Prepare your repository** (already done!):
+   - Dependencies pinned in `requirements.txt`
+   - Configuration in `.streamlit/config.toml`
+   - Secrets template in `.streamlit/secrets.toml.example`
+
+2. **Deploy to Streamlit Cloud:**
+   - Go to https://streamlit.io/cloud
+   - Sign in with GitHub
+   - Click "New app"
+   - Select repository: `adaptive-qualitative-interviewer`
+   - Main file path: `interfaces/streamlit_app.py`
+   - Click "Deploy"
+
+3. **Add your secrets** in the Streamlit Cloud dashboard:
+   - Go to app settings → Secrets
+   - Add your API keys:
+     ```toml
+     OPENAI_API_KEY = "sk-your-key-here"
+     LLM_PROVIDER = "openai"
+     LLM_MODEL = "gpt-4o"
+     ```
+   - Or for Anthropic:
+     ```toml
+     ANTHROPIC_API_KEY = "sk-ant-your-key-here"
+     LLM_PROVIDER = "anthropic"
+     LLM_MODEL = "claude-3-5-sonnet-20241022"
+     ```
+
+4. **Your app will be live at:**
+   ```
+   https://your-app-name.streamlit.app
+   ```
+
+**Auto-deployment:** Push to GitHub → App automatically updates!
+
+### Other Cloud Options
+
+- **Railway**: https://railway.app (free tier available)
+- **Render**: https://render.com (free tier available)
+- **Heroku**: Traditional deployment (~$7/month)
+- **University/Institution Server**: Use Docker deployment (see above)
 
 ## Research Considerations
 

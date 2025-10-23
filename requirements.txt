@@ -1,22 +1,28 @@
-# Core dependencies
-langchain>=0.3.0
-langchain-openai>=0.2.0
-langgraph>=0.2.0
-langchain-anthropic>=0.2.0
+# Core LangChain dependencies (pinned for Streamlit Cloud stability)
+langchain==0.3.27
+langchain-openai==0.3.35
+langchain-anthropic==0.3.22
+langgraph==0.6.10
 
-# UI and API
-chainlit>=1.1.0
-streamlit>=1.30.0
-fastapi>=0.115.0
-uvicorn>=0.30.0
-pydantic>=2.0.0
-pydantic-settings>=2.0.0
+# UI Framework
+streamlit==1.50.0
+
+# API Framework (optional - for FastAPI interface)
+fastapi==0.116.2
+uvicorn==0.30.0
+
+# Data models and settings
+pydantic==2.12.2
+pydantic-settings==2.11.0
 
 # Data handling
-python-dotenv>=1.0.0
-pyyaml>=6.0
-python-multipart>=0.0.9
+python-dotenv==1.1.1
+pyyaml==6.0.2
 
-# Utilities
-python-jose[cryptography]>=3.3.0
-passlib[bcrypt]>=1.7.4
+# Optional: For Chainlit interface
+# chainlit==2.8.3
+
+# Optional: For API with authentication
+# python-multipart==0.0.9
+# python-jose[cryptography]==3.3.0
+# passlib[bcrypt]==1.7.4
