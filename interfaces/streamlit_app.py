@@ -25,11 +25,46 @@ st.set_page_config(
     layout="centered"
 )
 
+# Check for API keys before initializing
+def check_api_keys():
+    """Check if API keys are configured"""
+    openai_key = os.getenv("OPENAI_API_KEY")
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+
+    if not openai_key and not anthropic_key:
+        st.error("⚠️ **API Key Not Configured**")
+        st.markdown("""
+        Please configure your API key in Streamlit Cloud:
+
+        1. Click **"Manage app"** (bottom right)
+        2. Click **"Settings"** → **"Secrets"**
+        3. Add your API key:
+
+        ```toml
+        OPENAI_API_KEY = "sk-your-key-here"
+        LLM_PROVIDER = "openai"
+        LLM_MODEL = "gpt-4o"
+        ```
+
+        Or for Anthropic:
+
+        ```toml
+        ANTHROPIC_API_KEY = "sk-ant-your-key-here"
+        LLM_PROVIDER = "anthropic"
+        LLM_MODEL = "claude-3-5-sonnet-20241022"
+        ```
+
+        4. Click **"Save"** and the app will restart
+        """)
+        st.stop()
+
 # Initialize bot
 @st.cache_resource
 def get_bot():
     return ESMBot()
 
+# Check API keys first
+check_api_keys()
 bot = get_bot()
 
 # Initialize session state
