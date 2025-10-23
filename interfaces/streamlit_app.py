@@ -3,6 +3,13 @@ Streamlit UI interface for the ESM Chatbot.
 
 Run with: streamlit run interfaces/streamlit_app.py
 """
+import sys
+from pathlib import Path
+
+# Add project root to Python path for Streamlit Cloud deployment
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 import streamlit as st
 from core.api import ESMBot
 from config.settings import get_settings
