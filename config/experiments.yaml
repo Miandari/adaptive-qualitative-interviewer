@@ -93,3 +93,146 @@ experiments:
         - "Participant has shared sufficient detail"
         - "Natural conversation endpoint reached"
         - "8 or more exchanges completed"
+
+  wise_decision_making:
+    name: "Wise Decision-Making Process Study"
+    description: "Exploring how people think through complex decisions with competing values and uncertainty"
+
+    # Required user information at session start
+    user_info_fields:
+      - name: "participant_id"
+        type: "text"
+        required: true
+        prompt: "Please enter your Participant ID"
+      - name: "age"
+        type: "number"
+        required: false
+        prompt: "What is your age?"
+      - name: "conversation_depth"
+        type: "select"
+        required: false
+        prompt: "Preferred conversation depth"
+        options:
+          - "Short (5 exchanges)"
+          - "Medium (8 exchanges)"
+          - "Deep (12+ exchanges)"
+
+    # Scenario and initial question
+    initial_question:
+      text: "Put yourself in the position of the main character in this situation. Please describe how you personally would proceed here. How would you approach making this decision?"
+      context: |
+        Thank you for participating in our study on decision-making processes.
+
+        As you read this story, consider it happening to you:
+
+        **Employment Decision Scenario**
+
+        You work at a small company where the job is stable, and your coworkers are friendly. The pay, however, barely covers your expenses, and lately you've been feeling growing pressure from your family to find something better. Recently, a recruiter from a large firm reached out to say that your experience could make you a strong candidate for a higher-paying position. However, to apply, you need to complete several months of a trial period that requires leaving your current job. It would mean quitting your stable role, spending months preparing, and not knowing if you will be hired at the end. Staying would keep you financially afloat, but feeling stuck; leaving could open new opportunities but also bring uncertainty and risk.
+
+    # Research goals focused on PROCESS
+    goals:
+      - "Understand their decision-making process and reasoning steps"
+      - "Explore how they identify and gather relevant information"
+      - "Examine how they weigh competing values and priorities"
+      - "Assess how they evaluate and manage uncertainty and risk"
+      - "Identify their emotional awareness and regulation strategies"
+
+    # Dynamic follow-up categories for all 4 process aspects
+    follow_up_categories:
+      information_gathering:
+        description: "Explore how they identify what information they need and seek it out"
+        example_questions:
+          - "You mentioned gathering information. What specific information would you need to make this decision?"
+          - "How would you go about getting that information?"
+          - "How would you know when you have enough information to decide?"
+          - "What sources would you trust for this kind of information?"
+          - "Are there any questions you'd want answered before proceeding?"
+
+      value_prioritization:
+        description: "Understand how they weigh competing values (security vs growth, family vs personal fulfillment)"
+        example_questions:
+          - "I notice you're weighing [X vs Y]. How do you decide which matters more to you?"
+          - "What makes [value] particularly important to you in this situation?"
+          - "How do your family's expectations factor into your thinking?"
+          - "Have your priorities shifted as you've thought through this?"
+          - "If you couldn't have both [X and Y], how would you choose?"
+
+      risk_assessment:
+        description: "Examine how they evaluate uncertainty and potential outcomes"
+        example_questions:
+          - "You mentioned the risk of [X]. How do you evaluate whether that risk is worth taking?"
+          - "What would make you more comfortable with that uncertainty?"
+          - "How do you think about the potential downsides versus upsides?"
+          - "What's your threshold for acceptable risk in career decisions?"
+          - "How would you handle it if things didn't work out as planned?"
+
+      emotional_regulation:
+        description: "Understand how they manage emotions during the decision process"
+        example_questions:
+          - "You mentioned feeling [emotion]. How does that influence your thinking about this decision?"
+          - "How would you manage [pressure/fear/excitement] while making this choice?"
+          - "What helps you think clearly when facing difficult decisions?"
+          - "Do your emotions about this change as you think it through?"
+          - "How do you balance emotional responses with logical analysis?"
+
+      process_reflection:
+        description: "Encourage metacognitive reflection on their approach"
+        example_questions:
+          - "Looking at how you've thought through this, what's guiding your approach?"
+          - "Is this how you typically make important decisions?"
+          - "What might you be overlooking in your process?"
+          - "How would you know if you're making a wise decision here?"
+          - "What advice would you give someone else facing a similar choice?"
+
+    # Conversation flow instructions for the LLM
+    conversation_guidelines:
+      tone: "curious and thoughtful, like a researcher genuinely interested in understanding"
+      style: "conversational and exploratory, focused on process over outcome"
+      probing_approach: "gentle"  # gentle probing to clarify, not challenge
+
+      approach: |
+        Your goal is to understand HOW this person thinks through complex decisions, not to judge their choice or push them toward a particular outcome.
+
+        **Core Principles:**
+        1. Focus on PROCESS over outcome - care about their reasoning, not their final decision
+        2. Listen for natural mentions of the 4 key aspects (info gathering, values, risk, emotions)
+        3. Follow up dynamically based on what THEY bring up
+        4. Use gentle probing to explore deeper, not to challenge
+        5. Ask "how" and "why" questions to unpack their reasoning
+
+        **When they mention information gathering:**
+        - Explore what information they need and how they'd get it
+        - Ask about their threshold for "enough information"
+
+        **When they mention competing values:**
+        - Explore how they prioritize between competing goods
+        - Ask what makes certain values more important
+
+        **When they mention risk or uncertainty:**
+        - Explore how they evaluate whether risks are worth taking
+        - Ask about their comfort level with not knowing
+
+        **When they mention emotions or pressure:**
+        - Explore how emotions influence their thinking
+        - Ask how they manage feelings while deciding
+
+        **Gentle Probing Examples:**
+        - "That's interesting. I'm curious - have you considered how [factor] might affect this?"
+        - "You focused on [aspect]. I wonder what role [other aspect] plays for you?"
+        - "Help me understand more about why [approach] feels right to you"
+        - "What led you to think about it that way?"
+
+        **Process Transitions:**
+        - "Let's dig into that process a bit more..."
+        - "Walk me through your thinking on that..."
+        - "How did you arrive at that consideration?"
+
+        Ask ONE question at a time. Keep questions open-ended. Show genuine curiosity about their unique process.
+        Aim for depth based on user preference: 5 exchanges (short), 8 exchanges (medium), or 12+ exchanges (deep).
+
+      exit_criteria:
+        - "Explored their decision-making process across multiple dimensions"
+        - "Participant has reflected on their approach with sufficient depth"
+        - "Natural conversation endpoint reached"
+        - "Target exchange count reached based on depth setting"
+        - "Covered at least 3 of the 4 key process aspects"

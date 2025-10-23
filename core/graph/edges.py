@@ -32,15 +32,29 @@ def should_continue_conversation(state: ConversationState) -> Literal["continue"
     topics_covered = state.get("topics_covered", [])
     goals = experiment_config.get("goals", [])
 
-    # Check if maximum exchanges reached (from exit criteria)
+    # Check if maximum exchanges reached
+    # First check user preference (if provided)
+    user_info = state.get("user_info", {})
+    depth_preference = user_info.get("conversation_depth", "")
+
     max_exchanges = 8  # default
-    for criterion in exit_criteria:
-        if "exchanges completed" in criterion:
-            # Extract number from criterion string
-            import re
-            match = re.search(r'(\d+)', criterion)
-            if match:
-                max_exchanges = int(match.group(1))
+
+    # Parse depth preference
+    if "Short" in depth_preference or "5" in depth_preference:
+        max_exchanges = 5
+    elif "Medium" in depth_preference or "8" in depth_preference:
+        max_exchanges = 8
+    elif "Deep" in depth_preference or "12" in depth_preference:
+        max_exchanges = 12
+    else:
+        # Fall back to exit criteria
+        for criterion in exit_criteria:
+            if "exchanges completed" in criterion:
+                # Extract number from criterion string
+                import re
+                match = re.search(r'(\d+)', criterion)
+                if match:
+                    max_exchanges = int(match.group(1))
 
     if exchange_count >= max_exchanges:
         return "end"

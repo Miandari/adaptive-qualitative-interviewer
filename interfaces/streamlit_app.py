@@ -31,6 +31,7 @@ if "session_started" not in st.session_state:
     st.session_state.session_id = None
     st.session_state.messages = []
     st.session_state.conversation_complete = False
+    st.session_state.selected_experiment = None
 
 # Get experiments
 experiments = bot.list_experiments()
@@ -39,12 +40,29 @@ if not experiments:
     st.error("No experiments configured. Please add experiments to config/experiments.yaml")
     st.stop()
 
-experiment_id = experiments[0]
-
 # STEP 1: Info Collection Screen
 if not st.session_state.session_started:
-    st.title("ESM Chatbot")
-    st.subheader(f"Welcome to the {experiment_id.replace('_', ' ').title()}")
+    st.title("Adaptive Qualitative Interviewer")
+
+    # Experiment selection
+    if len(experiments) > 1 and st.session_state.selected_experiment is None:
+        st.markdown("### Select Study")
+
+        for exp_id in experiments:
+            exp_config = bot.question_manager.get_experiment_config(exp_id)
+            exp_name = exp_config.get("name", exp_id)
+            exp_desc = exp_config.get("description", "")
+
+            if st.button(f"**{exp_name}**\n\n{exp_desc}", key=f"select_{exp_id}", use_container_width=True):
+                st.session_state.selected_experiment = exp_id
+                st.rerun()
+        st.stop()
+
+    # Use selected experiment or default to first one
+    experiment_id = st.session_state.selected_experiment or experiments[0]
+    exp_config = bot.question_manager.get_experiment_config(experiment_id)
+
+    st.subheader(f"Welcome to the {exp_config.get('name', experiment_id)}")
 
     st.markdown("---")
 
@@ -141,7 +159,10 @@ if not st.session_state.session_started:
 
 # STEP 2: Chat Interface
 else:
-    st.title("ESM Study Conversation")
+    # Get experiment name for title
+    exp_id = st.session_state.get("selected_experiment", experiments[0])
+    exp_config = bot.question_manager.get_experiment_config(exp_id)
+    st.title(exp_config.get("name", "Study Conversation"))
 
     # Display chat messages
     for message in st.session_state.messages:
