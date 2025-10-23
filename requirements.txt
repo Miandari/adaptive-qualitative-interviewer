@@ -1,0 +1,22 @@
+# Core dependencies
+langchain>=0.3.0
+langchain-openai>=0.2.0
+langgraph>=0.2.0
+langchain-anthropic>=0.2.0
+
+# UI and API
+chainlit>=1.1.0
+streamlit>=1.30.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Data handling
+python-dotenv>=1.0.0
+pyyaml>=6.0
+python-multipart>=0.0.9
+
+# Utilities
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4

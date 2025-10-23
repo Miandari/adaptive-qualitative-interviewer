@@ -1,0 +1,210 @@
+"""
+Streamlit UI interface for the ESM Chatbot.
+
+Run with: streamlit run interfaces/streamlit_app.py
+"""
+import streamlit as st
+from core.api import ESMBot
+from config.settings import get_settings
+import json
+import os
+
+# Initialize settings
+settings = get_settings()
+
+# Page config
+st.set_page_config(
+    page_title="ESM Chatbot",
+    layout="centered"
+)
+
+# Initialize bot
+@st.cache_resource
+def get_bot():
+    return ESMBot()
+
+bot = get_bot()
+
+# Initialize session state
+if "session_started" not in st.session_state:
+    st.session_state.session_started = False
+    st.session_state.session_id = None
+    st.session_state.messages = []
+    st.session_state.conversation_complete = False
+
+# Get experiments
+experiments = bot.list_experiments()
+
+if not experiments:
+    st.error("No experiments configured. Please add experiments to config/experiments.yaml")
+    st.stop()
+
+experiment_id = experiments[0]
+
+# STEP 1: Info Collection Screen
+if not st.session_state.session_started:
+    st.title("ESM Chatbot")
+    st.subheader(f"Welcome to the {experiment_id.replace('_', ' ').title()}")
+
+    st.markdown("---")
+
+    st.markdown("### Participant Information")
+    st.markdown("Please fill out the form below to begin the study.")
+
+    # Get user info fields
+    user_info_fields = bot.question_manager.get_user_info_fields(experiment_id)
+
+    # Create form
+    with st.form("user_info_form"):
+        user_info = {}
+
+        for field in user_info_fields:
+            field_name = field.get("name")
+            field_type = field.get("type", "text")
+            is_required = field.get("required", False)
+            prompt_text = field.get("prompt", f"Please provide {field_name}")
+
+            # Add label with required indicator
+            label = prompt_text
+            if is_required:
+                label += " *"
+
+            # Create appropriate input based on field type
+            if field_type == "number":
+                value = st.number_input(
+                    label,
+                    min_value=0,
+                    step=1,
+                    key=field_name
+                )
+                if value or not is_required:
+                    user_info[field_name] = value
+            elif field_type == "select":
+                # For multiple choice
+                options = field.get("options", [])
+                value = st.selectbox(
+                    label,
+                    options=[""] + options if not is_required else options,
+                    key=field_name
+                )
+                if value:
+                    user_info[field_name] = value
+            else:
+                # Text input
+                value = st.text_input(
+                    label,
+                    key=field_name
+                )
+                if value:
+                    user_info[field_name] = value
+
+        st.markdown("_* Required fields_")
+
+        # Submit button
+        submitted = st.form_submit_button("Start Study", use_container_width=True, type="primary")
+
+        if submitted:
+            # Validate required fields
+            is_valid, missing = bot.question_manager.validate_user_info(
+                experiment_id,
+                user_info
+            )
+
+            if not is_valid:
+                st.error(f"Please fill in required fields: {', '.join(missing)}")
+            else:
+                # Create session
+                try:
+                    participant_id = user_info.get("participant_id", "unknown")
+                    session = bot.start_session(
+                        participant_id=participant_id,
+                        experiment_id=experiment_id,
+                        user_info=user_info
+                    )
+
+                    # Store in session state
+                    st.session_state.session_id = session.session_id
+                    st.session_state.session_started = True
+
+                    # Get initial message
+                    initial_msg = bot.get_initial_message(session.session_id)
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": initial_msg
+                    })
+
+                    # Rerun to show chat
+                    st.rerun()
+
+                except ValueError as e:
+                    st.error(f"Error: {str(e)}")
+
+# STEP 2: Chat Interface
+else:
+    st.title("ESM Study Conversation")
+
+    # Display chat messages
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # Chat input (only if conversation not complete)
+    if not st.session_state.conversation_complete:
+        if prompt := st.chat_input("Type your response here..."):
+            # Add user message to chat
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            # Get bot response
+            try:
+                result = bot.process_message(
+                    session_id=st.session_state.session_id,
+                    message=prompt
+                )
+
+                # Add assistant response
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": result["response"]
+                })
+
+                # Check if complete
+                if result.get("is_complete", False):
+                    st.session_state.conversation_complete = True
+
+                # Rerun to show new message
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+
+    else:
+        # Conversation complete
+        st.success("Session Complete! Thank you for participating.")
+
+        # Export button
+        if st.button("Export Session Data", use_container_width=True):
+            data = bot.export_session(st.session_state.session_id)
+
+            # Save to file
+            os.makedirs("exports", exist_ok=True)
+            filename = f"exports/session_{st.session_state.session_id}.json"
+
+            with open(filename, 'w') as f:
+                json.dump(data, f, indent=2)
+
+            st.success(f"Data exported to: {filename}")
+
+            # Also provide download button
+            st.download_button(
+                label="Download Session Data",
+                data=json.dumps(data, indent=2),
+                file_name=f"session_{st.session_state.session_id}.json",
+                mime="application/json"
+            )
+
+        # Option to start new session
+        if st.button("Start New Session", use_container_width=True):
+            st.session_state.clear()
+            st.rerun()

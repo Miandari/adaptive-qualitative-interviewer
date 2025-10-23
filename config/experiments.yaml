@@ -1,0 +1,95 @@
+# Experience Sampling Experiment Configuration
+
+experiments:
+  empathy_study:
+    name: "Daily Empathy Interactions Study"
+    description: "Exploring daily fluctuations in empathy during social interactions"
+
+    # Required user information at session start
+    user_info_fields:
+      - name: "participant_id"
+        type: "text"
+        required: true
+        prompt: "Please enter your Participant ID"
+      - name: "age"
+        type: "number"
+        required: false
+        prompt: "What is your age?"
+      - name: "gender"
+        type: "select"
+        required: false
+        prompt: "What is your gender?"
+        options:
+          - "Male"
+          - "Female"
+          - "Non-binary"
+          - "Prefer not to say"
+      - name: "timezone"
+        type: "text"
+        required: false
+        prompt: "What is your timezone?"
+
+    # Initial probe question
+    initial_question:
+      text: "To start, I'd like to hear about a recent conversation or interaction you had with someone. It could be from today or the past few days - whichever comes to mind. What happened?"
+      context: "Thank you for participating in our study on empathy and social interactions. This conversation will help us understand how people experience and perceive empathy in their daily lives."
+
+    # ESM conversation goals
+    goals:
+      - "Understand the context of the social interaction"
+      - "Identify perspective-taking behaviors"
+      - "Assess emotional awareness and empathy"
+      - "Explore the content and quality of communication"
+
+    # Dynamic follow-up categories
+    follow_up_categories:
+      context_exploration:
+        description: "Learn more about the situation"
+        example_questions:
+          - "Where did this interaction take place?"
+          - "How long did the conversation last?"
+          - "Was this a planned or spontaneous interaction?"
+
+      perspective_taking:
+        description: "Assess perspective-taking and understanding"
+        example_questions:
+          - "How do you think the other person was feeling during the conversation?"
+          - "Did they share their thoughts or concerns with you?"
+          - "Were you able to see things from their perspective?"
+
+      emotional_awareness:
+        description: "Explore emotional aspects"
+        example_questions:
+          - "How did you feel during this interaction?"
+          - "Did you notice any changes in how you or they felt?"
+          - "What emotions do you think were present?"
+
+      communication_quality:
+        description: "Examine communication patterns"
+        example_questions:
+          - "Did the other person ask you questions about your thoughts or feelings?"
+          - "How would you describe the listening in this conversation?"
+          - "Did you feel understood by the other person?"
+
+    # Conversation flow instructions for the LLM
+    conversation_guidelines:
+      tone: "warm, curious, and non-judgmental"
+      style: "conversational and natural, like a thoughtful researcher"
+      approach: |
+        Start with the initial question and let the participant describe their interaction naturally.
+        Based on their response, ask relevant follow-up questions to explore:
+        1. The context and details of the interaction
+        2. Signs of perspective-taking by either party
+        3. Emotional awareness and empathy shown
+        4. Quality of communication and listening
+
+        Ask one question at a time. Keep questions open-ended when possible.
+        Show curiosity about specific details they mention.
+        Validate their experiences while gathering research-quality data.
+        Aim for 5-8 exchanges total to explore the interaction deeply without overwhelming the participant.
+
+      exit_criteria:
+        - "Covered all main goal areas"
+        - "Participant has shared sufficient detail"
+        - "Natural conversation endpoint reached"
+        - "8 or more exchanges completed"
