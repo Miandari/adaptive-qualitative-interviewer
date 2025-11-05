@@ -26,7 +26,7 @@ esm_chatbot/
 │   │   └── questions.py   # Question management
 │   └── api.py             # Main ESMBot API
 ├── interfaces/            # Different UI/API options
-│   ├── chainlit_app.py    # Chainlit web interface
+│   ├── streamlit_app.py   # Streamlit web interface (primary)
 │   └── fastapi_app.py     # REST API
 ├── config/
 │   ├── settings.py        # Application settings
@@ -71,13 +71,13 @@ LLM_MODEL=gpt-4o     # or claude-3-5-sonnet-20241022
 
 ### 3. Run the Chatbot
 
-**Option A: Chainlit Web Interface (Recommended for getting started)**
+**Option A: Streamlit Web Interface (Recommended for getting started)**
 
 ```bash
-chainlit run interfaces/chainlit_app.py
+streamlit run interfaces/streamlit_app.py
 ```
 
-Then open http://localhost:8080 in your browser.
+Then open http://localhost:8501 in your browser.
 
 **Option B: REST API Server**
 
@@ -249,9 +249,9 @@ Full API documentation at `http://localhost:8000/docs`
 
 ## Data Export
 
-### Export from Chainlit UI
+### Export from Streamlit UI
 
-Click the "Export Session Data" button at the end of a conversation.
+Use the export functionality in the Streamlit interface.
 
 ### Export via API
 
@@ -317,8 +317,8 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-# For Chainlit
-CMD ["chainlit", "run", "interfaces/chainlit_app.py", "--host", "0.0.0.0"]
+# For Streamlit
+CMD ["streamlit", "run", "interfaces/streamlit_app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
 
 # OR for API
 # CMD ["uvicorn", "interfaces.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
@@ -387,7 +387,7 @@ CMD ["chainlit", "run", "interfaces/chainlit_app.py", "--host", "0.0.0.0"]
 
 ### Integration Options
 
-1. **Standalone Web App**: Use Chainlit interface directly
+1. **Standalone Web App**: Use Streamlit interface directly
 2. **Embedded Widget**: Integrate via iframe or JavaScript SDK
 3. **Backend Integration**: Use as Python library in your app
 4. **Microservice**: Deploy API separately and integrate via HTTP
@@ -473,5 +473,5 @@ For issues and questions:
 Built with:
 - [LangChain](https://github.com/langchain-ai/langchain)
 - [LangGraph](https://github.com/langchain-ai/langgraph)
-- [Chainlit](https://github.com/Chainlit/chainlit)
+- [Streamlit](https://streamlit.io)
 - [FastAPI](https://fastapi.tiangolo.com/)

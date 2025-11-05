@@ -2,7 +2,7 @@
 Core API for the ESM Chatbot.
 
 This module provides the main interface that can be used by different
-front-ends (Chainlit, FastAPI, etc.) or imported as a library.
+front-ends (Streamlit, FastAPI, etc.) or imported as a library.
 """
 from typing import Dict, Any, Optional
 from langchain_core.messages import HumanMessage
@@ -31,6 +31,7 @@ class ESMBot:
     def __init__(
         self,
         experiment_config_path: Optional[str] = None,
+        experiments_dir: Optional[str] = None,
         llm_provider: Optional[str] = None,
         llm_model: Optional[str] = None
     ):
@@ -38,7 +39,8 @@ class ESMBot:
         Initialize the ESM Bot.
 
         Args:
-            experiment_config_path: Path to experiments YAML file
+            experiment_config_path: (Legacy) Path to experiments.yaml file. If provided, uses legacy mode.
+            experiments_dir: Path to experiments directory. If None, uses default 'experiments/' directory.
             llm_provider: LLM provider (openai or anthropic)
             llm_model: Model name to use
         """
@@ -48,8 +50,13 @@ class ESMBot:
         self.session_manager = SessionManager()
         self.storage = InMemoryStorage()
 
-        config_path = experiment_config_path or self.settings.experiment_config_path
-        self.question_manager = QuestionManager(config_path)
+        # Initialize QuestionManager
+        # If experiment_config_path is provided, use legacy mode
+        # Otherwise, use new directory-based mode
+        if experiment_config_path:
+            self.question_manager = QuestionManager(config_path=experiment_config_path)
+        else:
+            self.question_manager = QuestionManager(experiments_dir=experiments_dir)
 
         # Initialize LLM
         provider = llm_provider or self.settings.llm_provider

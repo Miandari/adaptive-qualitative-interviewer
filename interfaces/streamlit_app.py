@@ -79,7 +79,7 @@ if "session_started" not in st.session_state:
 experiments = bot.list_experiments()
 
 if not experiments:
-    st.error("No experiments configured. Please add experiments to config/experiments.yaml")
+    st.error("No experiments configured. Please add experiments to the experiments/ directory")
     st.stop()
 
 # STEP 1: Info Collection Screen

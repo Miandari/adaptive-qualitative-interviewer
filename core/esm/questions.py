@@ -3,24 +3,41 @@ Question management for ESM conversations
 """
 from typing import Dict, Any, List, Optional
 import yaml
+import os
+from pathlib import Path
+from core.experiment_loader import ExperimentLoader, load_legacy_experiments
 
 
 class QuestionManager:
     """
     Manages questions and conversation flow for ESM studies.
+    Supports both new experiment directory structure and legacy experiments.yaml format.
     """
 
-    def __init__(self, config_path: str):
+    def __init__(self, config_path: Optional[str] = None, experiments_dir: Optional[str] = None):
         """
-        Initialize with experiment configuration file.
+        Initialize with experiment configuration.
 
         Args:
-            config_path: Path to the experiment YAML configuration
-        """
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
+            config_path: (Legacy) Path to experiments.yaml file. If provided, loads from this file.
+            experiments_dir: Path to experiments directory. If None, uses default 'experiments/' directory.
 
-        self.experiments = config.get("experiments", {})
+        Note:
+            If config_path is provided, it takes precedence (legacy mode).
+            Otherwise, loads from experiments directory structure (new mode).
+        """
+        self.experiments: Dict[str, Dict[str, Any]] = {}
+
+        # Legacy mode: Load from single YAML file
+        if config_path and os.path.exists(config_path):
+            self.experiments = load_legacy_experiments(config_path)
+            print(f"Loaded experiments from legacy config: {config_path}")
+
+        # New mode: Load from experiment directories
+        else:
+            loader = ExperimentLoader(experiments_dir)
+            self.experiments = loader.experiments
+            print(f"Loaded {len(self.experiments)} experiments from directory structure")
 
     def get_experiment_config(self, experiment_id: str) -> Optional[Dict[str, Any]]:
         """

@@ -24,10 +24,6 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
 
-    # Chainlit Settings
-    chainlit_host: str = "0.0.0.0"
-    chainlit_port: int = 8080
-
     # Experiment Configuration
     experiment_config_path: str = "config/experiments.yaml"
 

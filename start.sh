@@ -52,8 +52,8 @@ echo "====================================="
 echo ""
 echo "Choose how to run the chatbot:"
 echo ""
-echo "1. Chainlit Web Interface (Recommended):"
-echo "   chainlit run interfaces/chainlit_app.py"
+echo "1. Streamlit Web Interface (Recommended):"
+echo "   streamlit run interfaces/streamlit_app.py"
 echo ""
 echo "2. FastAPI REST API:"
 echo "   uvicorn interfaces.fastapi_app:app --reload"
@@ -68,9 +68,9 @@ read -p "Which interface would you like to start? (1/2/3/skip): " choice
 case $choice in
     1)
         echo ""
-        echo "Starting Chainlit interface..."
-        echo "Open http://localhost:8080 in your browser"
-        chainlit run interfaces/chainlit_app.py
+        echo "Starting Streamlit interface..."
+        echo "Open http://localhost:8501 in your browser"
+        streamlit run interfaces/streamlit_app.py
         ;;
     2)
         echo ""
