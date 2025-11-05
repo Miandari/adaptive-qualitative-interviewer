@@ -82,15 +82,18 @@ if not experiments:
     st.error("No experiments configured. Please add experiments to the experiments/ directory")
     st.stop()
 
-# Debug: Show loaded experiments in sidebar (helpful for troubleshooting)
+# Debug info in sidebar (collapsible, for troubleshooting)
 with st.sidebar:
-    st.markdown("### Debug Info")
-    st.markdown(f"**Loaded Experiments:** {len(experiments)}")
-    for exp in experiments:
-        st.markdown(f"- {exp}")
-    if st.button("🔄 Clear Cache & Reload"):
-        st.cache_resource.clear()
-        st.rerun()
+    with st.expander("🔧 Debug & Troubleshooting", expanded=False):
+        st.markdown(f"**Loaded Experiments:** {len(experiments)}")
+        for exp in experiments:
+            st.markdown(f"- `{exp}`")
+        st.markdown("---")
+        st.markdown("**Having issues?**")
+        st.markdown("- If experiments don't load after updating secrets, clear the cache")
+        if st.button("🔄 Clear Cache & Reload", use_container_width=True):
+            st.cache_resource.clear()
+            st.rerun()
 
 # STEP 1: Info Collection Screen
 if not st.session_state.session_started:

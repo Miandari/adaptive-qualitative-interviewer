@@ -245,7 +245,11 @@ interfaces/           # Multiple UIs
 - Prompt templates (in YAML, easily customizable)
 
 ### Integration Considerations
-- **Streamlit Cloud:** Works well, use secrets for API keys
+- **Streamlit Cloud:** Works well, use secrets for API keys and private experiments
+  - **IMPORTANT:** After updating secrets, you MUST clear Streamlit's cache
+  - Use the "Clear Cache & Reload" button in the sidebar, OR manually reboot the app
+  - The bot is cached with `@st.cache_resource`, so it won't see new secrets until cache is cleared
+  - Private experiments load from `EXPERIMENT_{ID}_YAML` environment variables
 - **Local Development:** Use .env file (already gitignored)
 - **Multi-User:** Will need authentication and database
 - **API Access:** FastAPI interface ready for programmatic use
@@ -343,6 +347,64 @@ Will support:
 - [ ] Create collaboration features
 - [ ] Implement experiment dependency management
 - [ ] Add advanced features (branching, scheduling, multi-modal)
+
+## Common Issues and Troubleshooting
+
+### Streamlit Cloud: Experiments Not Loading from Secrets
+
+**Problem:** Added experiment to secrets but it's not showing up in the app.
+
+**Solution:**
+1. Verify secret variable name is exactly: `EXPERIMENT_{ID}_YAML` (uppercase with underscores)
+2. Check YAML formatting - use triple quotes `'''` correctly
+3. **Clear Streamlit cache** - this is the most common issue!
+   - Click "Clear Cache & Reload" button in sidebar
+   - OR reboot app from "Manage app"
+4. Check logs in "Manage app" for error messages
+
+**Why this happens:** The bot is cached with `@st.cache_resource`. When secrets are added/updated, the cached bot doesn't see the new environment variables until cache is cleared.
+
+### Streamlit Cloud: AttributeError 'NoneType' object has no attribute 'get'
+
+**Problem:** App crashes after filling out participant info form.
+
+**Cause:** Experiment config couldn't be found (usually due to cache issue).
+
+**Solution:**
+1. Clear cache using the sidebar button
+2. Check that experiment actually loaded (see "Debug Info" in sidebar)
+3. If only showing 1 experiment when you expect 2, see "Experiments Not Loading" above
+
+### Local Development: Experiments Not Loading
+
+**Problem:** Running locally and experiments not found.
+
+**Solution:**
+1. Check that `experiments/` directory exists with `examples/` and/or `private/` subdirectories
+2. Verify YAML files are in correct locations
+3. Check for YAML syntax errors (indentation, etc.)
+4. Run `venv/bin/python test_experiment_loading.py` to diagnose
+
+### YAML Parsing Errors
+
+**Common Issues:**
+- Indentation must use spaces (2 spaces per level), not tabs
+- Multi-line strings require `|` or `>` operators
+- Lists start with `- ` (dash + space)
+- Nested objects require proper indentation
+
+**Example of correct formatting:**
+```yaml
+initial_question:
+  text: "Your question"
+  context: |
+    Line 1
+    Line 2
+
+goals:
+  - "Goal 1"
+  - "Goal 2"
+```
 
 ## Questions to Revisit
 
