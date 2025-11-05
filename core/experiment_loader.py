@@ -69,7 +69,8 @@ class ExperimentLoader:
 
                 if experiment_config:
                     self.experiments[experiment_id] = experiment_config
-                    print(f"Loaded experiment: {experiment_id} from {yaml_file}")
+                    import sys
+                    print(f"Loaded experiment: {experiment_id} from {yaml_file}", file=sys.stderr)
 
             except Exception as e:
                 print(f"Error loading experiment from {yaml_file}: {e}")
@@ -144,10 +145,14 @@ class ExperimentLoader:
 
                     if self._validate_experiment(experiment_config, exp_id):
                         self.experiments[exp_id] = experiment_config
-                        print(f"Loaded experiment: {exp_id} from environment variable {key}")
+                        import sys
+                        print(f"✓ Loaded experiment: {exp_id} from environment variable {key}", file=sys.stderr)
 
                 except Exception as e:
-                    print(f"Error loading experiment from {key}: {e}")
+                    import sys
+                    print(f"✗ Error loading experiment from {key}: {e}", file=sys.stderr)
+                    import traceback
+                    traceback.print_exc(file=sys.stderr)
 
             # Check for JSON format
             elif key.startswith("EXPERIMENT_") and key.endswith("_JSON"):
@@ -158,10 +163,14 @@ class ExperimentLoader:
 
                     if self._validate_experiment(experiment_config, exp_id):
                         self.experiments[exp_id] = experiment_config
-                        print(f"Loaded experiment: {exp_id} from environment variable {key}")
+                        import sys
+                        print(f"✓ Loaded experiment: {exp_id} from environment variable {key}", file=sys.stderr)
 
                 except Exception as e:
-                    print(f"Error loading experiment from {key}: {e}")
+                    import sys
+                    print(f"✗ Error loading experiment from {key}: {e}", file=sys.stderr)
+                    import traceback
+                    traceback.print_exc(file=sys.stderr)
 
     def _validate_experiment(self, config: Dict[str, Any], exp_id: str) -> bool:
         """
