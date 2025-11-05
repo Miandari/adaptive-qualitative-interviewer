@@ -82,6 +82,16 @@ if not experiments:
     st.error("No experiments configured. Please add experiments to the experiments/ directory")
     st.stop()
 
+# Debug: Show loaded experiments in sidebar (helpful for troubleshooting)
+with st.sidebar:
+    st.markdown("### Debug Info")
+    st.markdown(f"**Loaded Experiments:** {len(experiments)}")
+    for exp in experiments:
+        st.markdown(f"- {exp}")
+    if st.button("🔄 Clear Cache & Reload"):
+        st.cache_resource.clear()
+        st.rerun()
+
 # STEP 1: Info Collection Screen
 if not st.session_state.session_started:
     st.title("Adaptive Qualitative Interviewer")
@@ -204,6 +214,13 @@ else:
     # Get experiment name for title
     exp_id = st.session_state.get("selected_experiment", experiments[0])
     exp_config = bot.question_manager.get_experiment_config(exp_id)
+
+    # Handle case where experiment config might be None
+    if exp_config is None:
+        st.error(f"⚠️ Experiment '{exp_id}' not found. Available experiments: {experiments}")
+        st.error("This might happen if the experiment wasn't loaded properly. Try clearing cache or rebooting the app.")
+        st.stop()
+
     st.title(exp_config.get("name", "Study Conversation"))
 
     # Display chat messages
