@@ -15,11 +15,32 @@ experiments/
 
 ## How Experiments Are Loaded
 
-The system automatically discovers and loads all `.yaml` files from:
-1. `experiments/examples/` - Public example experiments
-2. `experiments/private/` - Your private experiments (not tracked in git)
+The system automatically discovers and loads experiments from multiple sources:
+
+1. **`experiments/examples/`** - Public example experiments (included in repository)
+2. **`experiments/private/`** - Your private experiments (gitignored, not tracked in git)
+3. **Environment variables** - For Streamlit Cloud and other cloud deployments
 
 Each experiment file should be named with a unique identifier (e.g., `my_study.yaml`). This identifier will be used to reference the experiment throughout the system.
+
+### Loading from Environment Variables (Streamlit Cloud)
+
+For cloud deployments where you can't commit private files, experiments can be loaded from environment variables or Streamlit secrets:
+
+**Format:**
+- Variable name: `EXPERIMENT_{ID}_YAML` where `{ID}` is uppercase with underscores
+- Variable value: Complete YAML content as a multi-line string
+
+**Example in Streamlit secrets.toml:**
+```toml
+EXPERIMENT_WISE_DECISION_MAKING_YAML = '''
+name: "Wise Decision-Making Process Study"
+description: "Study description"
+# ... rest of your YAML content
+'''
+```
+
+See `.streamlit/secrets.toml.example` for a complete example.
 
 ## Creating a New Experiment
 
